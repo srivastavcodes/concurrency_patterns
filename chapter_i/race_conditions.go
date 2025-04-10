@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	race1()
+	race2()
+	race3()
 }
 
 func race1() {
