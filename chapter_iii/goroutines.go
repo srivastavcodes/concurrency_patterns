@@ -53,15 +53,3 @@ func goroutine4() {
 	}
 	wg.Wait()
 }
-
-func main() {
-	fmt.Println("before goroutine1")
-	goroutine1()
-	fmt.Println("after goroutine1")
-	goroutine2()
-	fmt.Println("after goroutine2")
-	goroutine3()
-	fmt.Println("after goroutine3")
-	goroutine4()
-	fmt.Println("after goroutine4")
-}
