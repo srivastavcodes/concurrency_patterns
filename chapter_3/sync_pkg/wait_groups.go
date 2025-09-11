@@ -1,0 +1,26 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	allAtOnce()
+}
+
+func allAtOnce() {
+	hello := func(wg *sync.WaitGroup, id int) {
+		defer wg.Done()
+		fmt.Printf("hello from %d!\n", id)
+	}
+	const numGreeters = 5
+
+	var wg sync.WaitGroup
+	wg.Add(numGreeters)
+
+	for i := 0; i < numGreeters; i++ {
+		go hello(&wg, i)
+	}
+	wg.Wait()
+}
