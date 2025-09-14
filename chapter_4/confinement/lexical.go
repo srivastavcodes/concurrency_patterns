@@ -22,7 +22,7 @@ func lexicalConfinementBuffer() {
 	go printData(&wg, data[:6])
 	go printData(&wg, data[6:])
 	wg.Wait()
-	// data remains as it, copy is passed around
+	// data remains as is, copy is passed around
 	fmt.Println(string(data))
 }
 
