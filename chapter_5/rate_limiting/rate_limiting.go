@@ -43,19 +43,28 @@ func main() {
 }
 
 type ApiConnection struct {
-	rateLimiter RateLimiter
+	networkLimit,
+	diskLimit,
+	apiLimit RateLimiter
 }
 
 func Open() *ApiConnection {
-	secondLimit := rate.NewLimiter(Per(2, time.Second), 1)
-	minuteLimit := rate.NewLimiter(Per(10, time.Minute), 10)
 	return &ApiConnection{
-		rateLimiter: NewMultiLimiter(secondLimit, minuteLimit),
+		apiLimit: NewMultiLimiter(
+			rate.NewLimiter(Per(2, time.Second), 2),
+			rate.NewLimiter(Per(10, time.Minute), 10),
+		),
+		diskLimit: NewMultiLimiter(
+			rate.NewLimiter(rate.Limit(1), 1),
+		),
+		networkLimit: NewMultiLimiter(
+			rate.NewLimiter(Per(3, time.Second), 3),
+		),
 	}
 }
 
 func (conn *ApiConnection) ReadFile(ctx context.Context) error {
-	if err := conn.rateLimiter.Wait(ctx); err != nil {
+	if err := NewMultiLimiter(conn.apiLimit, conn.diskLimit).Wait(ctx); err != nil {
 		return err
 	}
 	// pretend we do work here
@@ -63,7 +72,7 @@ func (conn *ApiConnection) ReadFile(ctx context.Context) error {
 }
 
 func (conn *ApiConnection) ResolveAddress(ctx context.Context) error {
-	if err := conn.rateLimiter.Wait(ctx); err != nil {
+	if err := NewMultiLimiter(conn.apiLimit, conn.networkLimit).Wait(ctx); err != nil {
 		return err
 	}
 	// pretend we do work here
