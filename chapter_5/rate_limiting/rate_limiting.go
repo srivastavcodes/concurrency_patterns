@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"golang.org/x/time/rate"
 )
@@ -42,12 +43,14 @@ func main() {
 }
 
 type ApiConnection struct {
-	rateLimiter *rate.Limiter
+	rateLimiter RateLimiter
 }
 
 func Open() *ApiConnection {
+	secondLimit := rate.NewLimiter(Per(2, time.Second), 1)
+	minuteLimit := rate.NewLimiter(Per(10, time.Minute), 10)
 	return &ApiConnection{
-		rateLimiter: rate.NewLimiter(rate.Limit(1), 1),
+		rateLimiter: NewMultiLimiter(secondLimit, minuteLimit),
 	}
 }
 
