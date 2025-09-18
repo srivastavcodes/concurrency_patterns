@@ -71,7 +71,7 @@ func simulateBadDesign() {
 	}
 }
 
-func heartbeatFunc() {
+func sendAtIntervals() {
 	doWork := func(done <-chan any, pulseInterval time.Duration) (<-chan any, <-chan time.Time) {
 		results := make(chan time.Time)
 		heartbeat := make(chan any)
